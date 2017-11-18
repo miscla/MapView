@@ -22,9 +22,9 @@ export default class App extends Component<{}> {
             latitude: 0.1,
             longitude: 0.1,
             error: null,
+            markers:[
+            ]
         };
-
-        console.log("constructor",this.state);
     }
 
     componentDidMount() {
@@ -35,6 +35,26 @@ export default class App extends Component<{}> {
                     longitude: position.coords.longitude,
                     error: null,
                 }, ()=>{
+
+                    fetch('http://alfatihstudi.000webhostapp.com/minihack/Services.php?application=read', {
+                        // post text must be in upper case
+                        method: 'get',
+                        dataType: 'json',
+                        headers:{
+                            Accept:"application/json",
+                            "Content-Type":"application/json"
+                        }
+                    }).then((response)=>{
+                        return response.json()
+                    }).then((json)=>{
+                        // console.log("THIS IS JSON",json)
+                        for(var i=0;i<json.length;i++){
+                            json[i].latitude = parseFloat(json[i].latitude)
+                            json[i].longitude = parseFloat(json[i].longitude)
+                        }
+                        this.setState({markers:json})
+                        console.log("INI MARKER STATE",json)
+                    })
                     fetch('http://alfatihstudi.000webhostapp.com/minihack/Services.php?application=update', {
                         // post text must be in upper case
                         method: 'POST',
@@ -43,18 +63,16 @@ export default class App extends Component<{}> {
                          "Content-Type":"application/json"
                         },
                          body: JSON.stringify({
-                          email: "aceparis32@gmail.com",
+                          email: "aceparis32@gmail.com", // ntar email ini harusnya dapet dari acep
                           latitude: this.state.latitude,
                           longitude: this.state.longitude
                       })
                     })
-                    console.log("succes")
                 });
             },
             (error) => this.setState({ error: error.message }),
             { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
         );
-        console.log("getCurrentPosition",this.state);
     }
 
     componentWillUnmount() {
@@ -77,8 +95,19 @@ export default class App extends Component<{}> {
               coordinate={{
                   latitude: this.state.latitude,
                   longitude: this.state.longitude,
-              }}>
-          </MapView.Marker>
+              }}
+          />
+            {this.state.markers.map((marker,i) => (
+                <MapView.Marker
+                    key={i}
+                    coordinate={
+                        {
+                            latitude: marker.latitude,
+                            longitude: marker.longitude,
+                        }
+                    }
+                />
+            ))}
         </MapView>
       </View>
     );
