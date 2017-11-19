@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import MapView from 'react-native-maps';
+import { Container, Header, Content, Item, Input } from 'native-base';
 
 export default class App extends Component<{}> {
     constructor(props) {
@@ -73,6 +74,7 @@ export default class App extends Component<{}> {
             for(var i=0;i<json.length;i++){
                 json[i].latitude = parseFloat(json[i].latitude)
                 json[i].longitude = parseFloat(json[i].longitude)
+                json[i].skill = json[i].skill
             }
             this.setState({markers:json})
             console.log("INI MARKER STATE",json)
@@ -86,6 +88,14 @@ export default class App extends Component<{}> {
   render() {
     return (
       <View style={styles.container}>
+          {/*<Container>*/}
+              {/*<Header />*/}
+              {/*<Content>*/}
+                  {/*<Item rounded>*/}
+                      {/*<Input placeholder='Rounded Textbox'/>*/}
+                  {/*</Item>*/}
+              {/*</Content>*/}
+          {/*</Container>*/}
         <MapView
             style={styles.map}
             // set mapview region, use region instead of initialRegion
@@ -100,6 +110,7 @@ export default class App extends Component<{}> {
                   latitude: this.state.latitude,
                   longitude: this.state.longitude,
               }}
+              title={"Me"}
           />
             {this.state.markers.map((marker,i) => (
                 <MapView.Marker
@@ -110,6 +121,7 @@ export default class App extends Component<{}> {
                             longitude: marker.longitude,
                         }
                     }
+                    title={marker.skill}
                 />
             ))}
         </MapView>
