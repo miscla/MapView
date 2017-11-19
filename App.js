@@ -28,6 +28,7 @@ export default class App extends Component<{}> {
     }
 
     componentDidMount() {
+        this.timer = setInterval(()=> this.getLocation(), 10000)
         this.watchId = navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -35,26 +36,7 @@ export default class App extends Component<{}> {
                     longitude: position.coords.longitude,
                     error: null,
                 }, ()=>{
-
-                    fetch('http://alfatihstudi.000webhostapp.com/minihack/Services.php?application=read', {
-                        // post text must be in upper case
-                        method: 'get',
-                        dataType: 'json',
-                        headers:{
-                            Accept:"application/json",
-                            "Content-Type":"application/json"
-                        }
-                    }).then((response)=>{
-                        return response.json()
-                    }).then((json)=>{
-                        // console.log("THIS IS JSON",json)
-                        for(var i=0;i<json.length;i++){
-                            json[i].latitude = parseFloat(json[i].latitude)
-                            json[i].longitude = parseFloat(json[i].longitude)
-                        }
-                        this.setState({markers:json})
-                        console.log("INI MARKER STATE",json)
-                    })
+                    // ketika dia lokasi nya berubah otomatis ngupdate database
                     fetch('http://alfatihstudi.000webhostapp.com/minihack/Services.php?application=update', {
                         // post text must be in upper case
                         method: 'POST',
@@ -73,6 +55,28 @@ export default class App extends Component<{}> {
             (error) => this.setState({ error: error.message }),
             { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
         );
+    }
+
+    async getLocation(){
+        fetch('http://alfatihstudi.000webhostapp.com/minihack/Services.php?application=read', {
+            // post text must be in upper case
+            method: 'get',
+            dataType: 'json',
+            headers:{
+                Accept:"application/json",
+                "Content-Type":"application/json"
+            }
+        }).then((response)=>{
+            return response.json()
+        }).then((json)=>{
+            // console.log("THIS IS JSON",json)
+            for(var i=0;i<json.length;i++){
+                json[i].latitude = parseFloat(json[i].latitude)
+                json[i].longitude = parseFloat(json[i].longitude)
+            }
+            this.setState({markers:json})
+            console.log("INI MARKER STATE",json)
+        })
     }
 
     componentWillUnmount() {
